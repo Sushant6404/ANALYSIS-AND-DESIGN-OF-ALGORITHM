@@ -1,0 +1,79 @@
+#include <iostream>
+#include <vector>
+#include <climits>
+using namespace std;
+
+const int INF = INT_MAX;
+
+pair<int, vector<int>> multistageShortestPath(vector<vector<pair<int, int>>> &graph,int stages)
+{
+  int n = graph.size();
+  vector<int> cost(n, INF);
+  vector<int> parent(n, -1);
+  vector<int> path;
+
+  // Target vertex has cost 0
+  cost[n - 1] = 0;
+
+  // Backward approach
+  for (int i = stages - 1; i >= 1; i--)
+  {
+    for (int u = 0; u < n; u++)
+    {
+      for (auto &edge : graph[u])
+      {
+        int v = edge.first;
+        int w = edge.second;
+        if (cost[u] > cost[v] + w)
+        {
+          cost[u] = cost[v] + w;
+          parent[u] = v;
+        }
+      }
+    }
+  }
+
+  // Reconstruct path
+  int current = 0; // Source vertex
+  while (current != -1)
+  {
+    path.push_back(current);
+    current = parent[current];
+  }
+
+  return {cost[0], path};
+}
+
+int main()
+{
+  int vertices = 8;
+  int stages = 4;
+
+  // Adjacency list representation: {vertex, weight}
+  vector<vector<pair<int, int>>> graph(vertices);
+
+  // Stage 1 to Stage 2
+  graph[0] = {{1, 2}, {2, 1}, {3, 3}};
+
+  // Stage 2 to Stage 3
+  graph[1] = {{4, 2}, {5, 3}};
+  graph[2] = {{4, 6}, {5, 7}, {6, 8}};
+  graph[3] = {{5, 6}, {6, 7}};
+
+  // Stage 3 to Stage 4
+  graph[4] = {{7, 6}};
+  graph[5] = {{7, 4}};
+  graph[6] = {{7, 5}};
+
+  auto result = multistageShortestPath(graph, stages);
+  int min_cost = result.first;
+  vector<int> path = result.second;
+
+  cout << "Shortest path cost: " << min_cost << endl;
+  cout << "Path: ";
+  for (int v : path)
+    cout << v << " ";
+  cout << endl;
+
+  return 0;
+}
