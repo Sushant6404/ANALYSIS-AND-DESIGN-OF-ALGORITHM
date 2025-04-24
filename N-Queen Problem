@@ -1,0 +1,58 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+void solveNQueens(int n, int row, vector<string> &board, vector<vector<string>> &result,
+                  vector<bool> &cols, vector<bool> &diag1, vector<bool> &diag2)
+{
+  if (row == n)
+  {
+    result.push_back(board); // Valid configuration found
+    return;
+  }
+
+  for (int col = 0; col < n; col++)
+  {
+    int d1 = row - col + n - 1; // Left diagonal index
+    int d2 = row + col;         // Right diagonal index
+
+    if (!cols[col] && !diag1[d1] && !diag2[d2])
+    {
+      board[row][col] = 'Q';
+      cols[col] = diag1[d1] = diag2[d2] = true;
+
+      solveNQueens(n, row + 1, board, result, cols, diag1, diag2);
+
+      board[row][col] = '.'; // Backtrack
+      cols[col] = diag1[d1] = diag2[d2] = false;
+    }
+  }
+}
+
+vector<vector<string>> solveNQueens(int n)
+{
+  vector<vector<string>> result;
+  vector<string> board(n, string(n, '.')); // Initialize empty board
+
+  vector<bool> cols(n, false);          // Track occupied columns
+  vector<bool> diag1(2 * n - 1, false); // Track left diagonals (↖)
+  vector<bool> diag2(2 * n - 1, false); // Track right diagonals (↗)
+
+  solveNQueens(n, 0, board, result, cols, diag1, diag2);
+  return result;
+}
+
+int main()
+{
+  int n = 4;
+  vector<vector<string>> solutions = solveNQueens(n);
+
+  for (const auto &board : solutions)
+  {
+    for (const string &row : board)
+    {
+      cout << row << endl;
+    }
+    cout << "-----------------" << endl;
+  }
+  return 0;
+}
