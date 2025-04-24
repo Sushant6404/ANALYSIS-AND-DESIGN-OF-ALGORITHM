@@ -1,0 +1,21 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+bool subsetSumDP(const vector<int>& S, int T) {
+    vector<bool> dp(T + 1, false);
+    dp[0] = true;  // Empty subset sums to 0
+    for (int num : S) {
+        for (int j = T; j >= num; j--) {
+            if (dp[j - num]) dp[j] = true;
+        }
+    }
+    return dp[T];
+}
+
+int main() {
+    vector<int> S = {3, 4, 5, 2};
+    int T = 9;
+    cout << (subsetSumDP(S, T) ? "True" : "False") << endl;  // Output: True
+    return 0;
+}
